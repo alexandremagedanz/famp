@@ -67,3 +67,4 @@ async def delete_curso(curso_id: int, db: AsyncSession = Depends(get_session)):
             return Response(status_code=status.HTTP_204_NO_CONTENT)
         else:
             raise HTTPException(detail="Curso não encontrado", status_code=status.HTTP_404_NOT_FOUND) 
+        
