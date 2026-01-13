@@ -1,5 +1,5 @@
 from pytz import timezone
-from typing import Optional, List
+from typing import Optional, List, Union
 from datetime import datetime, timedelta
 
 from fastapi.security import OAuth2PasswordBearer
@@ -16,7 +16,7 @@ oauth2_schema = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/usuarios/login"
 )
 
-async def autenticar(email: EmailStr, senha: str, db: AsyncSession) -> Optional[UsuarioModel]:
+async def autenticar(email: Union[EmailStr, str], senha: str, db: AsyncSession) -> Optional[UsuarioModel]:
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.email == email)
         result = await session.execute(query)

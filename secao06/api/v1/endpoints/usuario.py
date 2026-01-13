@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.exc import IntegrityError
 
 from models.usuario_model import UsuarioModel
 from schemas.usuario_schema import UsuarioSchemaArtigos, UsuarioSchemaBase, UsuarioSchemaCreate, UsuarioSchemaUp
@@ -18,20 +19,24 @@ router = APIRouter()
 def get_logado(usuario_logado: UsuarioModel = Depends(get_current_user)):
     return usuario_logado
 
-@router.post('/singup', response_model=UsuarioSchemaBase, status_code=status.HTTP_201_CREATED, summary="Cria um novo usuário", description="Essa rota cria um novo usuário no banco de dados.", tags=["Usuários"])
+@router.post('/signup', response_model=UsuarioSchemaBase, status_code=status.HTTP_201_CREATED, summary="Cria um novo usuário", description="Essa rota cria um novo usuário no banco de dados.", tags=["Usuários"], include_in_schema=False)
 async def post_usuario(usuario: UsuarioSchemaCreate, db: AsyncSession = Depends(get_section)):
     novo_usuario = UsuarioModel(nome=usuario.nome, sobrenome=usuario.sobrenome, email=usuario.email, senha=gerar_hash_senha(usuario.senha), eh_admin=usuario.eh_admin)
     async with db as session:
-        session.add(novo_usuario)
-        await session.commit()
-        return novo_usuario
+        try:
+            session.add(novo_usuario)
+            await session.commit()
+            return novo_usuario
+        except IntegrityError:
+            raise HTTPException(detail="Email ja cadastrado", status_code=status.HTTP_406_NOT_ACCEPTABLE)
+
     
 @router.get('/', response_model=List[UsuarioSchemaBase], status_code=status.HTTP_200_OK, summary="Retorna todos os usuários", description="Essa rota retorna todos os usuários cadastrados no banco de dados.", tags=["Usuários"])
 async def get_usuarios(db: AsyncSession = Depends(get_section)):
     async with db as session:
         query = select(UsuarioModel)
         result = await session.execute(query)
-        usuarios: List[UsuarioModel] = result.scalars().unique().all()
+        usuarios: List[UsuarioModel] = list(result.scalars().unique().all())
         return usuarios
 
 @router.get('/{usuario_id}', response_model=UsuarioSchemaArtigos, status_code=status.HTTP_200_OK, summary="Retorna um usuário", description="Essa rota retorna um usuário cadastrado no banco de dados.", tags=["Usuários"])

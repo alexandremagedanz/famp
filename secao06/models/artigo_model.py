@@ -6,7 +6,7 @@ from typing import Any
 class ArtigoModel(settings.DBBaseModel):
     __tablename__ = "artigos"
     id: Any = Column(Integer, primary_key=True, autoincrement=True)
-    titulob: Any= Column(String(256))
+    titulo: Any= Column(String(256))
     descricao: Any = Column(String(256))
     url_fonte: Any = Column(String(256))
     usuario_id = Column(Integer, ForeignKey("usuarios.id"))
