@@ -1,15 +1,15 @@
 from typing import List
-from pydantic import BaseSettings
+from pydantic import BaseSettings, Field
 from sqlalchemy.ext.declarative import declarative_base
  
 class Settings(BaseSettings):
     #Configurações gerais da aplicação
-    DB_USER: str
-    DB_PASSWORD: str
-    DB_HOST: str
-    DB_PORT: int
-    DB_NAME: str
-    API_JWT_SECRET: str
+    DB_USER: str = Field(default=None, env="DB_USER")
+    DB_PASSWORD: str = Field(default=None, env="DB_PASSWORD")
+    DB_HOST: str = Field(default=None, env="DB_HOST")
+    DB_PORT: int = Field(default=5432, env="DB_PORT")
+    DB_NAME: str = Field(default=None, env="DB_NAME")
+    API_JWT_SECRET: str = Field(default=None, env="API_JWT_SECRET")
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Cursos API - FastAPI SQL Model"
     DBBaseModel = declarative_base()
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     def JWT_SECRET(self) -> str:
         return self.API_JWT_SECRET
 
-    class Config():
+    class Config(BaseSettings.Config):
         env_file = ".env"
         case_sensitive = True
 
