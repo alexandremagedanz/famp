@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DB_NAME: str = Field(default=None, env="DB_NAME")
     API_JWT_SECRET: str = Field(default=None, env="API_JWT_SECRET")
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "Cursos API - FastAPI SQL Model"
+    PROJECT_NAME: str = "Cursos API - Segurança e Autenticação"
     DBBaseModel = declarative_base()
 
     """

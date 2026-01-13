@@ -19,8 +19,8 @@ class UsuarioSchemaArtigos(UsuarioSchemaBase):
     artigos: Optional[List[ArtigoSchema]]
 
 class UsuarioSchemaUp(UsuarioSchemaBase):
-    nome: str
-    sobrenome: str
-    email: EmailStr
-    senha: str
-    eh_admin: bool = False
+    nome: Optional[str]
+    sobrenome: Optional[str]
+    email: Optional[EmailStr]
+    senha: Optional[str]
+    eh_admin: Optional[bool]
